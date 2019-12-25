@@ -3,20 +3,28 @@ const dialog = require('dialog');
 const doNotDisturb = require("@sindresorhus/do-not-disturb");
 const {clearLineAndWrite} = require("../helpers/cli");
 
-const signature = "start [sessionSize]";
+const signature = "start [sessionSize] [restSize]";
 const description = "start the timer";
-
 function configure(yargs) {
     yargs.positional('sessionSize', {
         type: 'number',
         default: 25,
         describe: 'Duration of the session in minutes'
+    }).positional("restSize", {
+        type: 'number',
+        default: 5,
+        describe: 'Duration of the rest in minutes'
     })
-    //     .positional("restSize", {
-    //     type: 'number',
-    //     default: 5,
-    //     describe: 'Duration of the rest in minutes'
-    // })
+}
+
+function startCountdownTimer(timer, durationMinutes, onEvent) {
+    timer.start({
+        startValues: {minutes: durationMinutes},
+        countdown: true,
+    });
+
+    timer.addEventListener("secondsUpdated", async (e) => await onEvent("update", e.detail));
+    timer.addEventListener("targetAchieved", async (e) => await onEvent("finish", e.detail));
 }
 
 async function run(argv) {
@@ -24,21 +32,23 @@ async function run(argv) {
     console.log(`Starting timer for ${sessionSize}m`);
 
     const sessionTimer = new Timer();
+    const restTimer = new Timer();
 
     await doNotDisturb.enable();
-    sessionTimer.start({
-        startValues: {minutes: sessionSize},
-        countdown: true,
-    });
+    startCountdownTimer(sessionTimer, sessionSize, async (eventName, event) => {
+        if (eventName === "update") {
+            return printCountdownToCli(event.timer);
+        }
 
-    sessionTimer.addEventListener("secondsUpdated", (e) => {
-        clearLineAndWrite("⏱  " + sessionTimer.getTimeValues().toString());
+        if (eventName === "finish") {
+            await doNotDisturb.disable();
+            dialog.info('Good job! Take a moment to rest');
+        }
     });
+}
 
-    sessionTimer.addEventListener("targetAchieved", async function (e) {
-        await doNotDisturb.disable();
-        dialog.info('Good work! Take a moment to rest');
-    });
+function printCountdownToCli(timer) {
+    clearLineAndWrite("⏱  " + timer.getTimeValues().toString());
 }
 
 module.exports = {
