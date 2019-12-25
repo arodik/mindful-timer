@@ -28,7 +28,7 @@ function startCountdownTimer(timer, durationMinutes, onEvent) {
 }
 
 async function run(argv) {
-    const {sessionSize} = argv;
+    const {sessionSize, restSize} = argv;
     console.log(`Starting timer for ${sessionSize}m`);
 
     const sessionTimer = new Timer();
@@ -42,7 +42,22 @@ async function run(argv) {
 
         if (eventName === "finish") {
             await doNotDisturb.disable();
-            dialog.info('Good job! Take a moment to rest');
+            dialog.info("Good job! Take a moment to rest", "Mindful Timer", async () => {
+                if (!restSize) {
+                    return;
+                }
+
+                console.log(`\n\nStarting rest timer for ${sessionSize}m`);
+                startCountdownTimer(restTimer, restSize, async (eventName, event) => {
+                    if (eventName === "update") {
+                        return printCountdownToCli(event.timer);
+                    }
+
+                    if (eventName === "finish") {
+                        dialog.info("It's time to get back to work!", "Mindful Timer");
+                    }
+                });
+            });
         }
     });
 }
