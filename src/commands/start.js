@@ -2,6 +2,7 @@ const { Timer } = require("easytimer.js");
 const dialog = require('dialog');
 const doNotDisturb = require("@sindresorhus/do-not-disturb");
 const {clearLineAndWrite} = require("../helpers/cli");
+const {startCountdownTimer} = require("../helpers/timer");
 
 const signature = "start [sessionSize] [restSize]";
 const description = "start the timer";
@@ -15,16 +16,6 @@ function configure(yargs) {
         default: 5,
         describe: 'Duration of the rest in minutes'
     })
-}
-
-function startCountdownTimer(timer, durationMinutes, onEvent) {
-    timer.start({
-        startValues: {minutes: durationMinutes},
-        countdown: true,
-    });
-
-    timer.addEventListener("secondsUpdated", async (e) => await onEvent("update", e.detail));
-    timer.addEventListener("targetAchieved", async (e) => await onEvent("finish", e.detail));
 }
 
 async function run(argv) {
