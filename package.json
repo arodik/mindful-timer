@@ -1,0 +1,33 @@
+{
+  "name": "mindful-timer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arodik/mindful-timer.git"
+  },
+  "keywords": [
+    "pomodoro",
+    "timer",
+    "mindful",
+    "cli"
+  ],
+  "author": "Alexandr Rodik <alexandr.rodik@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/arodik/mindful-timer/issues"
+  },
+  "homepage": "https://github.com/arodik/mindful-timer#readme",
+  "dependencies": {
+    "@sindresorhus/do-not-disturb": "^1.1.0",
+    "dialog": "^0.3.1",
+    "easytimer.js": "^4.1.1",
+    "inquirer": "^7.0.1",
+    "node-notifier": "^6.0.0",
+    "yargs": "^15.0.2"
+  }
+}
