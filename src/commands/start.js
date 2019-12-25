@@ -3,7 +3,10 @@ const dialog = require('dialog');
 const doNotDisturb = require("@sindresorhus/do-not-disturb");
 const {clearLineAndWrite} = require("../helpers/cli");
 
-function configureStartCommand(yargs) {
+const signature = "start [sessionSize]";
+const description = "start the timer";
+
+function configure(yargs) {
     yargs.positional('sessionSize', {
         type: 'number',
         default: 25,
@@ -16,7 +19,7 @@ function configureStartCommand(yargs) {
     // })
 }
 
-async function startTimerCommand(argv) {
+async function run(argv) {
     const {sessionSize} = argv;
     console.log(`Starting timer for ${sessionSize}m`);
 
@@ -39,6 +42,10 @@ async function startTimerCommand(argv) {
 }
 
 module.exports = {
-    startTimerCommand,
-    configureStartCommand
+    startCommand: {
+        signature,
+        description,
+        configure,
+        run,
+    }
 };

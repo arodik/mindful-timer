@@ -1,10 +1,10 @@
-const {startTimerCommand, configureStartCommand} = require("./commands/start");
+const {startCommand} = require("./commands/start");
 
 async function runCli() {
     const yargs = require('yargs')
         .scriptName("mindful")
         .usage('$0 <cmd> [args]')
-        .command('start [sessionSize]', 'start the timer', configureStartCommand, startTimerCommand)
+        .command(startCommand.signature, startCommand.description, startCommand.configure, startCommand.run)
         .help()
         .argv;
 }
