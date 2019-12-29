@@ -26,6 +26,9 @@
     "@sindresorhus/do-not-disturb": "^1.1.0",
     "dialog": "^0.3.1",
     "easytimer.js": "^4.1.1",
+    "home-dir": "^1.0.0",
+    "lowdb": "^1.0.0",
+    "shortid": "^2.2.15",
     "yargs": "^15.0.2"
   }
 }
