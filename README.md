@@ -9,4 +9,4 @@ Simple Pomodoro timer
 **Only Mac OS**
 
 ## Usage: 
-`mindful-timer start [work timer duration] [rest timer duration]`
+`mindful-timer start [work timer duration]`
