@@ -1,22 +1,27 @@
 const Database = require("./db");
-const shortid = require("shortid");
+const shortId = require("shortid");
 
 class TimerSession extends Database {
-    static create(session) {
-        const collectionName = "sessions";
-        const sessionId = shortid.generate();
+    static create(sessionData) {
+        const sessionId = shortId.generate();
 
-        return new TimerSession(collectionName, sessionId, session);
+        const session = new TimerSession(sessionId);
+        session.create(sessionData);
+
+        return session;
     }
 
-    constructor(collectionName, sessionId, session) {
+    collection = "sessions";
+
+    constructor(sessionId) {
         super();
         this.sessionId = sessionId;
-        this.collection = collectionName;
+    }
 
-        this.db.get(collectionName)
+    create(session) {
+        this.db.get(this.collection)
             .push({
-                id: sessionId,
+                id: this.sessionId,
                 name: session.name,
                 startTs: Date.now(),
                 interruptTs: null,
