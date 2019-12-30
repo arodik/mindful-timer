@@ -22,6 +22,7 @@ class TimerSession extends Database {
                 interruptTs: null,
                 duration: session.size,
                 finished: false,
+                tags: session.tags,
             })
             .write();
     }

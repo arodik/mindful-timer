@@ -6,7 +6,7 @@ const {startCountdownTimer} = require("../helpers/timer");
 const TimerSession = require("../db/session");
 
 const signature = "start [sessionSize]";
-const description = "start the timer";
+const description = "Start the timer";
 function configure(yargs) {
     yargs.positional('sessionSize', {
         type: 'number',
@@ -16,16 +16,21 @@ function configure(yargs) {
         alias: "name",
         type: "string",
         describe: "Name of the session",
-    });
+    }).option("t", {
+        alias: "tags",
+        type: "array",
+        describe: "List of tags separated by whitespace"
+    })
 }
 
 async function run(argv) {
-    const {name, sessionSize} = argv;
+    const {name, sessionSize, tags} = argv;
     console.log(`Starting timer for ${sessionSize}m`);
 
     const sessionTimer = new Timer();
     const session = TimerSession.create({
         name,
+        tags,
         size: sessionSize,
     });
 
