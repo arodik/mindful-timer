@@ -10,3 +10,5 @@ Simple Pomodoro timer
 
 ## Usage: 
 `mindful-timer start [work timer duration]`
+
+`mindful-timer log [day|week|month|quarter|year|full]`
