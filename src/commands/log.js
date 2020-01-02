@@ -22,9 +22,7 @@ function getSessions(logPeriod) {
     });
 }
 
-function formatStartDate(startTs, period) {
-    const date = DateTime.fromMillis(startTs);
-
+function formatStartDate(date, period) {
     if (period === "day") {
         return date.toFormat("T");
     }
@@ -37,16 +35,29 @@ function formatStartDate(startTs, period) {
     return date.toFormat("dd MMM T");
 }
 
+function getReadableDuration(session) {
+    const startDate = DateTime.fromMillis(session.startTs);
+    const interruptDate = session.interruptTs
+        ? DateTime.fromMillis(session.interruptTs)
+        : null;
+    const duration = interruptDate
+        ? interruptDate.diff(startDate, "minutes").minutes
+        : session.duration;
+
+    return duration < 1 ? "<1" : duration;
+}
+
 function printSessionInfo(period) {
     return session => {
         const finished = session.finished ? "✅" : "❌";
-        const startDate = formatStartDate(session.startTs, period);
+        const startDate = formatStartDate(DateTime.fromMillis(session.startTs), period);
+        const readableDuration = getReadableDuration(session);
         const name = session.name || "Unnamed session";
         const tags = session.tags
             ? `(${session.tags.join(", ")})`
             : "";
 
-        console.log(`${finished} ${startDate} - ${session.duration}m - ${name} ${tags}`);
+        console.log(`${finished} ${startDate} - ${readableDuration}m - ${name} ${tags}`);
     };
 }
 
