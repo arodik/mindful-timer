@@ -1,6 +1,5 @@
-const {DateTime, Duration} = require("luxon");
+const {DateTime} = require("luxon");
 const TimerSession = require("../db/session");
-const {getDb} = require("../helpers/db");
 
 const signature = "log [period]";
 const description = "Show information about logged sessions";

@@ -1,6 +1,5 @@
 const Database = require("./db");
 const shortId = require("shortid");
-const {getDb} = require("../helpers/db");
 
 class TimerSession extends Database {
     static collection = "sessions";
