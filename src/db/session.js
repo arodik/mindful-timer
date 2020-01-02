@@ -1,7 +1,9 @@
 const Database = require("./db");
 const shortId = require("shortid");
+const {getDb} = require("../helpers/db");
 
 class TimerSession extends Database {
+    static collection = "sessions";
     static create(sessionData) {
         const sessionId = shortId.generate();
 
@@ -11,15 +13,13 @@ class TimerSession extends Database {
         return session;
     }
 
-    collection = "sessions";
-
     constructor(sessionId) {
         super();
         this.sessionId = sessionId;
     }
 
     create(session) {
-        this.db.get(this.collection)
+        this.db.get(TimerSession.collection)
             .push({
                 id: this.sessionId,
                 name: session.name,
@@ -33,13 +33,13 @@ class TimerSession extends Database {
     }
 
     finish() {
-        this.changeRecord(this.collection, this.sessionId, (session) => {
+        this.changeRecord(TimerSession.collection, this.sessionId, (session) => {
             session.finished = true;
         });
     }
 
     interrupt() {
-        this.changeRecord(this.collection, this.sessionId, (session) => {
+        this.changeRecord(TimerSession.collection, this.sessionId, (session) => {
             session.interruptTs = Date.now();
         });
     }

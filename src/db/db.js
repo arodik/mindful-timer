@@ -1,19 +1,18 @@
-const fs = require("fs");
-const path = require("path");
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
-const {getSettingsDir, getDbFileName} = require("../helpers/settings");
+const {getDb} = require("../helpers/db");
 
 class Database {
-    constructor() {
-        const settingsDir = getSettingsDir();
-        const dbFilePath = path.join(settingsDir, getDbFileName());
-        const adapter = new FileSync(dbFilePath);
+    static selectAll() {
+        return getDb().get(this.collection).value();
+    }
 
-        this.db = low(adapter);
-        this.db.defaults({
-            sessions: []
-        }).write();
+    static select(predicate) {
+        return getDb().get(this.collection)
+            .filter(predicate)
+            .value();
+    }
+
+    constructor() {
+        this.db = getDb();
     }
 
     changeRecord(collection, id, mutator) {
