@@ -74,5 +74,6 @@ module.exports = {
         description,
         configure,
         run,
-    }
+    },
+    getSessions
 };
