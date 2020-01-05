@@ -37,7 +37,7 @@ async function run(argv) {
     await doNotDisturb.enable();
     startCountdownTimer(sessionTimer, sessionSize, async (eventName, event) => {
         if (eventName === "update") {
-            return printCountdownToCli(event.timer);
+            return printTimerValue(event.timer);
         }
 
         if (eventName === "finish") {
@@ -47,14 +47,26 @@ async function run(argv) {
         }
     });
 
-    process.on('SIGINT', function() {
-        session.interrupt();
-        process.exit(0);
-    });
+    process.on('SIGINT', handleKeyboardInterrupt(session));
 }
 
-function printCountdownToCli(timer) {
+function printTimerValue(timer) {
     clearLineAndWrite("⏱  " + timer.getTimeValues().toString());
+}
+
+function handleKeyboardInterrupt(session) {
+    return function () {
+        const timeSpendSeconds = (Date.now() - session.data.startTs) / 1000;
+
+        if (timeSpendSeconds <= 10) {
+            console.log("\nSession won't be tracked");
+            session.remove();
+        } else {
+            session.interrupt();
+        }
+
+        process.exit(0);
+    };
 }
 
 module.exports = {

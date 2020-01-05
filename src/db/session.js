@@ -18,16 +18,18 @@ class TimerSession extends Database {
     }
 
     create(session) {
+        this.data = {
+            id: this.sessionId,
+            name: session.name,
+            startTs: Date.now(),
+            interruptTs: null,
+            duration: session.size,
+            finished: false,
+            tags: session.tags,
+        };
+
         this.db.get(TimerSession.collection)
-            .push({
-                id: this.sessionId,
-                name: session.name,
-                startTs: Date.now(),
-                interruptTs: null,
-                duration: session.size,
-                finished: false,
-                tags: session.tags,
-            })
+            .push(this.data)
             .write();
     }
 
@@ -41,6 +43,10 @@ class TimerSession extends Database {
         this.changeRecord(TimerSession.collection, this.sessionId, (session) => {
             session.interruptTs = Date.now();
         });
+    }
+
+    remove() {
+        super.remove(TimerSession.collection, this.sessionId);
     }
 }
 

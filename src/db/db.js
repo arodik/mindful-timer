@@ -29,6 +29,11 @@ class Database {
         this.db.write();
     }
 
+    remove(collection, id) {
+        this.db.get(collection)
+            .remove({ id })
+            .write()
+    }
 }
 
 module.exports = Database;
