@@ -1,7 +1,7 @@
-const Database = require("./db");
+const DatabaseCollection = require("./collection");
 const shortId = require("shortid");
 
-class TimerSession extends Database {
+class TimerSession extends DatabaseCollection {
     static collection = "sessions";
     static create(sessionData) {
         const sessionId = shortId.generate();

@@ -1,6 +1,21 @@
-const {getDb} = require("../helpers/db");
+const path = require("path");
+const {getFileName, getSettingsDir} = require("../helpers/settings");
+const {getDataPath} = require("./config");
+const {openFileDb} = require("../helpers/db");
 
-class Database {
+function getDb() {
+    const pathToData = path.resolve(
+        getSettingsDir(),
+        getDataPath(),
+        getFileName("db")
+    );
+
+    return openFileDb(pathToData, {
+        sessions: []
+    });
+}
+
+class DatabaseCollection {
     static selectAll() {
         return getDb().get(this.collection).value();
     }
@@ -36,4 +51,4 @@ class Database {
     }
 }
 
-module.exports = Database;
+module.exports = DatabaseCollection;

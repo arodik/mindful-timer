@@ -13,13 +13,13 @@ function getSettingsDir() {
     return settingsDir;
 }
 
-function getDbFileName() {
+function getFileName(baseName) {
     return fs.existsSync(path.resolve(__dirname, "../../.dev"))
-        ? "db.dev.json"
-        : "db.json";
+        ? `${baseName}.dev.json`
+        : `${baseName}.json`;
 }
 
 module.exports = {
+    getFileName,
     getSettingsDir,
-    getDbFileName
 };
