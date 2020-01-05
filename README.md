@@ -7,7 +7,7 @@ Simple Pomodoro timer (**Only Mac OS**)
 - Shows system alert instead of usual notification
 
 ## Usage: 
-`mindful-timer start [work timer duration]`
+`mindful-timer start [duration]`
 
 `mindful-timer log [day|week|month|quarter|year|full]`
 
