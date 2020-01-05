@@ -90,10 +90,6 @@ function printInterruptedStats(stats) {
         console.log(`Total time logged: ${getPrettyDurationString(stats.realTime)}`);
     }
 
-    if (stats.totalTime) {
-        console.log(`Total time estimated: ${getPrettyDurationString(stats.totalTime)}`);
-    }
-
     if (stats.tags.length) {
         console.log(`Tags: ${stats.tags.join(", ")}`);
     }
