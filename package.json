@@ -14,7 +14,9 @@
     "pomodoro",
     "timer",
     "mindful",
-    "cli"
+    "cli",
+    "do not disturb",
+    "mac os"
   ],
   "author": "Alexandr Rodik <alexandr.rodik@gmail.com>",
   "license": "MIT",
@@ -25,11 +27,11 @@
   "dependencies": {
     "@sindresorhus/do-not-disturb": "^1.1.0",
     "dialog": "^0.3.1",
-    "easytimer.js": "^4.1.1",
+    "easytimer.js": "^4.3.0",
     "home-dir": "^1.0.0",
     "lowdb": "^1.0.0",
-    "luxon": "^1.21.3",
+    "luxon": "^1.25.0",
     "shortid": "^2.2.15",
-    "yargs": "^15.1.0"
+    "yargs": "^16.0.3"
   }
 }
