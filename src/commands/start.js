@@ -43,6 +43,7 @@ async function run(argv) {
         if (eventName === "finish") {
             session.finish();
             await doNotDisturb.disable();
+            printTimerSummary(event);
             dialog.info("Good job! Take a moment to rest", "Mindful Timer");
         }
     });
@@ -52,6 +53,14 @@ async function run(argv) {
 
 function printTimerValue(timer) {
     clearLineAndWrite("⏱  " + timer.getTimeValues().toString());
+}
+
+function printTimerSummary(summary) {
+    const timeFormat = "HH:mm:ss";
+    const startedAt = summary.startedAt.toFormat(timeFormat);
+    const endedAt = summary.endedAt.toFormat(timeFormat);
+
+    clearLineAndWrite(`✅ ${startedAt} - ${endedAt}\n`);
 }
 
 function handleKeyboardInterrupt(session) {
