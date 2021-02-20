@@ -1,6 +1,6 @@
 const { Timer } = require("easytimer.js");
 const dialog = require("dialog");
-const doNotDisturb = require("@sindresorhus/do-not-disturb");
+const doNotDisturb = require("../dnd").getDndProvider();
 const {clearLineAndWrite} = require("../helpers/cli");
 const {startCountdownTimer} = require("../helpers/timer");
 const TimerSession = require("../db/session");
