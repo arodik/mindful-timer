@@ -12,3 +12,6 @@ Simple Pomodoro timer (**Only Mac OS**)
 `mindful-timer log [day|week|month|quarter|year|full]`
 
 `mindful-timer stats [day|week|month|quarter|year|full]`
+
+## Example of usage
+`mindful-timer start 25 -n 'test description' -t 'my tag'`
