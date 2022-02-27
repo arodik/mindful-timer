@@ -1,6 +1,6 @@
 {
   "name": "mindful-timer",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "type": "module",
   "description": "Pomodoro timer with automatic Do Not Disturb mode switching",
   "scripts": {},
