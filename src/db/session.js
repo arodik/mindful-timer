@@ -1,10 +1,10 @@
-import shortId from "shortid";
+import {nanoid} from "nanoid";
 import {DatabaseCollection} from "./collection.js";
 
 export class TimerSession extends DatabaseCollection {
     static collection = "sessions";
     static create(sessionData) {
-        const sessionId = shortId.generate();
+        const sessionId = nanoid(8);
 
         const session = new TimerSession(sessionId);
         session.create(sessionData);
