@@ -1,7 +1,8 @@
 {
   "name": "mindful-timer",
   "version": "0.4.2",
-  "description": "Pomodoro timer",
+  "type": "module",
+  "description": "Pomodoro timer with automatic Do Not Disturb mode switching",
   "scripts": {},
   "bin": {
     "mindful-timer": "./index.js"
@@ -16,7 +17,9 @@
     "mindful",
     "cli",
     "do not disturb",
-    "mac os"
+    "mac os",
+    "focus mode",
+    "concentration"
   ],
   "author": "Alexandr Rodik <alexandr.rodik@gmail.com>",
   "license": "MIT",
@@ -25,14 +28,15 @@
   },
   "homepage": "https://github.com/arodik/mindful-timer#readme",
   "dependencies": {
-    "@sindresorhus/do-not-disturb": "^1.1.0",
     "dialog": "^0.3.1",
     "easytimer.js": "^4.3.1",
     "home-dir": "^1.0.0",
-    "lowdb": "^1.0.0",
-    "luxon": "^1.26.0",
+    "lodash": "^4.17.21",
+    "lowdb": "^3.0.0",
+    "luxon": "^2.0.2",
+    "macos-focus-mode": "^1.0.0",
     "semver": "^7.3.4",
     "shortid": "^2.2.16",
-    "yargs": "^16.2.0"
+    "yargs": "^17.2.1"
   }
 }

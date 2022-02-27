@@ -1,6 +1,6 @@
-const path = require("path");
-const {getSettingsDir, getFileName} = require("../helpers/settings");
-const {openFileDb} = require("../helpers/db");
+import path from "path";
+import {openFileDb} from "../helpers/db.js";
+import {getFileName, getSettingsDir} from "../helpers/settings.js";
 
 function getConfigDb() {
     const settingsPath = getSettingsDir();
@@ -10,11 +10,7 @@ function getConfigDb() {
     });
 }
 
-function getDataPath() {
+export function getDataPath() {
     const config = getConfigDb();
-    return config.get("dataPath").value();
+    return config.data.dataPath;
 }
-
-module.exports = {
-    getDataPath,
-};

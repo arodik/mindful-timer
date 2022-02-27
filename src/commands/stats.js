@@ -1,5 +1,5 @@
-const {Duration} = require("luxon");
-const {logCommand, getSessions} = require("./log");
+import {getSessions, logCommand} from "./log.js";
+import {Duration} from "luxon";
 
 const signature = "stats [period]";
 const description = "Show statistics about logged sessions";
@@ -114,11 +114,9 @@ async function run(argv) {
     printInterruptedStats(interruptedStats);
 }
 
-module.exports = {
-    statsCommand: {
-        signature,
-        description,
-        configure,
-        run,
-    }
-};
+export const statsCommand = {
+    signature,
+    description,
+    configure,
+    run,
+}

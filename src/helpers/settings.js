@@ -1,8 +1,9 @@
-const fs = require("fs");
-const path = require("path");
-const getHomeDir = require("home-dir");
+import fs from "fs";
+import path from "path";
+import getHomeDir from "home-dir";
+import {resolvePath} from "../../root.js";
 
-function getSettingsDir() {
+export function getSettingsDir() {
     const homeDir = getHomeDir();
     const settingsDir = path.join(homeDir, ".mindful-timer");
 
@@ -13,13 +14,8 @@ function getSettingsDir() {
     return settingsDir;
 }
 
-function getFileName(baseName) {
-    return fs.existsSync(path.resolve(__dirname, "../../.dev"))
+export function getFileName(baseName) {
+    return fs.existsSync(resolvePath(".dev"))
         ? `${baseName}.dev.json`
         : `${baseName}.json`;
 }
-
-module.exports = {
-    getFileName,
-    getSettingsDir,
-};
