@@ -1,5 +1,5 @@
-const {DateTime} = require("luxon");
-const TimerSession = require("../db/session");
+import {TimerSession} from "../db/session.js";
+import {DateTime} from "luxon";
 
 const signature = "log [period]";
 const description = "Show information about logged sessions";
@@ -12,7 +12,7 @@ function configure(yargs) {
     })
 }
 
-function getSessions(logPeriod) {
+export function getSessions(logPeriod) {
     if (logPeriod === "full") {
         return TimerSession.selectAll();
     }
@@ -68,12 +68,9 @@ async function run(argv) {
     sessions.reverse().forEach(printSessionInfo(period));
 }
 
-module.exports = {
-    logCommand: {
-        signature,
-        description,
-        configure,
-        run,
-    },
-    getSessions
+export const logCommand = {
+    signature,
+    description,
+    configure,
+    run,
 };

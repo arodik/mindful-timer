@@ -1,21 +1,18 @@
-const os = require('os');
-const semverParse = require('semver/functions/parse');
-const LegacyDndProvider = require("./legacy-dnd");
-const ShellBigSurDndProvider = require("./shell-bigsur-dnd");
+import os from "os";
+import semverParse from "semver/functions/parse.js";
+import {DummyDnDProvider} from "./DummyDnD.js";
+import {ShortcutsMontereyFocusMode} from "./ShortcutsMontereyFocusMode.js";
 
-function isBigSurOrNewer() {
+function isMontereyOrNewer() {
     const { major } = semverParse(os.release())
-    return major >= 20;
+    return major >= 21;
 }
 
-function getDndProvider() {
-    if (isBigSurOrNewer()) {
-        return new ShellBigSurDndProvider();
+export function getDndProvider() {
+    if (isMontereyOrNewer()) {
+        return new ShortcutsMontereyFocusMode();
     }
 
-    return new LegacyDndProvider();
-}
-
-module.exports = {
-    getDndProvider,
+    console.log("Please upgrade MacOS to Monterey to use the Do Not Disturb mode");
+    return new DummyDnDProvider();
 }

@@ -1,6 +1,7 @@
 {
   "name": "mindful-timer",
   "version": "0.4.2",
+  "type": "module",
   "description": "Pomodoro timer",
   "scripts": {},
   "bin": {
@@ -25,14 +26,15 @@
   },
   "homepage": "https://github.com/arodik/mindful-timer#readme",
   "dependencies": {
-    "@sindresorhus/do-not-disturb": "^1.1.0",
     "dialog": "^0.3.1",
     "easytimer.js": "^4.3.1",
     "home-dir": "^1.0.0",
-    "lowdb": "^1.0.0",
-    "luxon": "^1.26.0",
+    "lodash": "^4.17.21",
+    "lowdb": "^3.0.0",
+    "luxon": "^2.0.2",
+    "macos-focus-mode": "^1.0.0",
     "semver": "^7.3.4",
     "shortid": "^2.2.16",
-    "yargs": "^16.2.0"
+    "yargs": "^17.2.1"
   }
 }

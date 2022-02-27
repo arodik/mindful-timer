@@ -1,18 +1,16 @@
-const {startCommand} = require("./commands/start");
-const {logCommand} = require("./commands/log");
-const {statsCommand} = require("./commands/stats");
+import {startCommand} from "./commands/start.js";
+import {logCommand} from "./commands/log.js";
+import {statsCommand} from "./commands/stats.js";
+import yargs from "yargs";
+import { hideBin } from 'yargs/helpers';
 
-async function runCli() {
-    const yargs = require('yargs')
-        .scriptName("mindful-timer")
+export async function runCli() {
+    yargs(hideBin(process.argv))
         .usage('$0 <cmd> [args]')
         .command(startCommand.signature, startCommand.description, startCommand.configure, startCommand.run)
         .command(logCommand.signature, logCommand.description, logCommand.configure, logCommand.run)
         .command(statsCommand.signature, statsCommand.description, statsCommand.configure, statsCommand.run)
         .help()
+        .demandCommand(1, "Please, select a command")
         .argv;
 }
-
-module.exports = {
-    runCli,
-};

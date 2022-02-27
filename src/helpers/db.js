@@ -1,16 +1,16 @@
-const path = require("path");
-const low = require("lowdb");
-const FileSync = require("lowdb/adapters/FileSync");
+import { LowSync, JSONFileSync } from 'lowdb';
 
-function openFileDb(path, defaults = {}) {
-    const adapter = new FileSync(path);
+export function openFileDb(path, defaults = {}) {
+    const adapter = new JSONFileSync(path);
 
-    const db = low(adapter);
-    db.defaults(defaults).write();
+    const db = new LowSync(adapter);
+    db.read();
+
+    if (!db.data) {
+        console.log(path, "Db data is empty, fill with defaults...");
+        db.data = db.data || defaults;
+        db.write();
+    }
 
     return db;
 }
-
-module.exports = {
-    openFileDb,
-};

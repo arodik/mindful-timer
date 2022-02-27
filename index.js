@@ -1,4 +1,4 @@
 #!/usr/bin/env node
-const {runCli} = require("./src/cli");
+import {runCli} from "./src/cli.js";
 
 runCli();

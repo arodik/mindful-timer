@@ -1,9 +1,9 @@
-const { Timer } = require("easytimer.js");
-const dialog = require("dialog");
-const doNotDisturb = require("../dnd").getDndProvider();
-const {clearLineAndWrite} = require("../helpers/cli");
-const {startCountdownTimer} = require("../helpers/timer");
-const TimerSession = require("../db/session");
+import {startCountdownTimer} from "../helpers/timer.js";
+import {TimerSession} from "../db/session.js";
+import {clearLineAndWrite} from "../helpers/cli.js";
+import {getDndProvider} from "../dnd/index.js";
+import {Timer} from "easytimer.js";
+import dialog from "dialog";
 
 const signature = "start [sessionSize]";
 const description = "Start the timer";
@@ -34,7 +34,8 @@ async function run(argv) {
         size: sessionSize,
     });
 
-    await doNotDisturb.enable();
+    const doNotDisturb = getDndProvider();
+    doNotDisturb.enable();
     startCountdownTimer(sessionTimer, sessionSize, async (eventName, event) => {
         if (eventName === "update") {
             return printTimerValue(event.timer);
@@ -42,7 +43,7 @@ async function run(argv) {
 
         if (eventName === "finish") {
             session.finish();
-            await doNotDisturb.disable();
+            doNotDisturb.disable();
             printTimerSummary(event);
             dialog.info("Good job! Take a moment to rest", "Mindful Timer");
         }
@@ -67,6 +68,7 @@ function handleKeyboardInterrupt(session) {
     return function () {
         const timeSpendSeconds = (Date.now() - session.data.startTs) / 1000;
 
+        console.log("\nStopping...");
         if (timeSpendSeconds <= 10) {
             console.log("\nSession won't be tracked");
             session.remove();
@@ -74,15 +76,15 @@ function handleKeyboardInterrupt(session) {
             session.interrupt();
         }
 
+        getDndProvider().disable();
+
         process.exit(0);
     };
 }
 
-module.exports = {
-    startCommand: {
-        signature,
-        description,
-        configure,
-        run,
-    }
+export const startCommand = {
+    signature,
+    description,
+    configure,
+    run,
 };

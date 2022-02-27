@@ -1,7 +1,8 @@
-const path = require("path");
-const {getFileName, getSettingsDir} = require("../helpers/settings");
-const {getDataPath} = require("./config");
-const {openFileDb} = require("../helpers/db");
+import {getFileName, getSettingsDir} from "../helpers/settings.js";
+import {openFileDb} from "../helpers/db.js";
+import {getDataPath} from "./config.js";
+import path from "path";
+import _ from "lodash";
 
 function getDb() {
     const pathToData = path.resolve(
@@ -15,15 +16,18 @@ function getDb() {
     });
 }
 
-class DatabaseCollection {
+export class DatabaseCollection {
     static selectAll() {
-        return getDb().get(this.collection).value();
+        const db = getDb();
+
+        return db.data[this.collection];
     }
 
     static select(predicate) {
-        return getDb().get(this.collection)
-            .filter(predicate)
-            .value();
+        const db = getDb();
+
+        const collection = db.data[this.collection];
+        return collection.filter(predicate);
     }
 
     constructor() {
@@ -31,9 +35,8 @@ class DatabaseCollection {
     }
 
     changeRecord(collection, id, mutator) {
-        const session = this.db.get(collection)
-            .find({id})
-            .value();
+        const collectionArray = this.db.data[collection];
+        const session = collectionArray.find(item => item.id === id);
 
         if (!session) {
             return;
@@ -45,10 +48,9 @@ class DatabaseCollection {
     }
 
     remove(collection, id) {
-        this.db.get(collection)
-            .remove({ id })
-            .write()
+        const collectionArray = this.db.data[collection];
+        _.remove(collectionArray, item => item.id === id);
+
+        this.db.write();
     }
 }
-
-module.exports = DatabaseCollection;

@@ -1,7 +1,7 @@
-const DatabaseCollection = require("./collection");
-const shortId = require("shortid");
+import shortId from "shortid";
+import {DatabaseCollection} from "./collection.js";
 
-class TimerSession extends DatabaseCollection {
+export class TimerSession extends DatabaseCollection {
     static collection = "sessions";
     static create(sessionData) {
         const sessionId = shortId.generate();
@@ -28,9 +28,10 @@ class TimerSession extends DatabaseCollection {
             tags: session.tags,
         };
 
-        this.db.get(TimerSession.collection)
-            .push(this.data)
-            .write();
+        const collection = this.db.data[TimerSession.collection];
+        collection.push(this.data);
+
+        this.db.write();
     }
 
     finish() {
@@ -49,5 +50,3 @@ class TimerSession extends DatabaseCollection {
         super.remove(TimerSession.collection, this.sessionId);
     }
 }
-
-module.exports = TimerSession;

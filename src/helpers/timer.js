@@ -1,6 +1,6 @@
-const {DateTime} = require("luxon");
+import {DateTime} from "luxon";
 
-function startCountdownTimer(timer, durationMinutes, onEvent) {
+export function startCountdownTimer(timer, durationMinutes, onEvent) {
     const startDate = DateTime.local();
 
     timer.start({
@@ -22,7 +22,3 @@ function startCountdownTimer(timer, durationMinutes, onEvent) {
         });
     });
 }
-
-module.exports = {
-   startCountdownTimer,
-};
