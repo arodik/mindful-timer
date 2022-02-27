@@ -6,6 +6,7 @@ import { hideBin } from 'yargs/helpers';
 
 export async function runCli() {
     yargs(hideBin(process.argv))
+        .version()
         .usage('$0 <cmd> [args]')
         .command(startCommand.signature, startCommand.description, startCommand.configure, startCommand.run)
         .command(logCommand.signature, logCommand.description, logCommand.configure, logCommand.run)
