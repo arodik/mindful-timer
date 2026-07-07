@@ -28,10 +28,7 @@ export class TimerSession extends DatabaseCollection {
             tags: session.tags,
         };
 
-        const collection = this.db.data[TimerSession.collection];
-        collection.push(this.data);
-
-        this.db.write();
+        this.insert(this.data);
     }
 
     finish() {

@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
-import getHomeDir from "home-dir";
+import os from "os";
 import {resolvePath} from "../../root.js";
 
 export function getSettingsDir() {
-    const homeDir = getHomeDir();
+    const homeDir = os.homedir();
     const settingsDir = path.join(homeDir, ".mindful-timer");
 
     if (!fs.existsSync(settingsDir)) {

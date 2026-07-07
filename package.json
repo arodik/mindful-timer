@@ -30,9 +30,6 @@
   "dependencies": {
     "dialog": "^0.3.1",
     "easytimer.js": "^4.3.1",
-    "home-dir": "^1.0.0",
-    "lodash": "^4.17.21",
-    "lowdb": "^3.0.0",
     "luxon": "^2.0.2",
     "macos-focus-mode": "^1.0.0",
     "nanoid": "^3.3.1",

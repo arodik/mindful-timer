@@ -1,5 +1,11 @@
 export function clearLineAndWrite(text) {
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
+    if (process.stdout.clearLine) {
+        process.stdout.clearLine();
+    } else {
+        process.stdout.write("\r");
+    }
+    if (process.stdout.cursorTo) {
+        process.stdout.cursorTo(0);
+    }
     process.stdout.write(text);
 }
