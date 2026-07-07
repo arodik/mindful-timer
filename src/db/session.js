@@ -1,10 +1,10 @@
-import {nanoid} from "nanoid";
+import crypto from "node:crypto";
 import {DatabaseCollection} from "./collection.js";
 
 export class TimerSession extends DatabaseCollection {
     static collection = "sessions";
     static create(sessionData) {
-        const sessionId = nanoid(8);
+        const sessionId = crypto.randomBytes(4).toString("hex");
 
         const session = new TimerSession(sessionId);
         session.create(sessionData);

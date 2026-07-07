@@ -2,6 +2,9 @@
   "name": "mindful-timer",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "description": "Pomodoro timer with automatic Do Not Disturb mode switching",
   "scripts": {},
   "bin": {
@@ -29,11 +32,9 @@
   "homepage": "https://github.com/arodik/mindful-timer#readme",
   "dependencies": {
     "dialog": "^0.3.1",
-    "easytimer.js": "^4.3.1",
-    "luxon": "^2.0.2",
+    "easytimer.js": "^4.6.0",
+    "luxon": "^3.7.2",
     "macos-focus-mode": "^1.0.0",
-    "nanoid": "^3.3.1",
-    "semver": "^7.3.4",
-    "yargs": "^17.2.1"
+    "yargs": "^18.0.0"
   }
 }
