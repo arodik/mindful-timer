@@ -3,7 +3,7 @@ import path from "path";
 import os from "os";
 import {resolvePath} from "../../root.js";
 
-export function getSettingsDir() {
+export function getSettingsDir(): string {
     const homeDir = os.homedir();
     const settingsDir = path.join(homeDir, ".mindful-timer");
 
@@ -14,7 +14,7 @@ export function getSettingsDir() {
     return settingsDir;
 }
 
-export function getFileName(baseName) {
+export function getFileName(baseName: string): string {
     return fs.existsSync(resolvePath(".dev"))
         ? `${baseName}.dev.json`
         : `${baseName}.json`;

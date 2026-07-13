@@ -7,7 +7,7 @@ import fs from "fs";
  * @param {string} filePath 
  * @returns {Array<object>}
  */
-export function readNdjson(filePath) {
+export function readNdjson(filePath: string): any[] {
     if (!fs.existsSync(filePath)) {
         return [];
     }
@@ -41,7 +41,7 @@ export function readNdjson(filePath) {
                 return null;
             }
         })
-        .filter(Boolean);
+        .filter((item): item is any => item !== null);
 }
 
 /**
@@ -50,7 +50,7 @@ export function readNdjson(filePath) {
  * @param {string} filePath 
  * @param {object} data 
  */
-export function appendNdjson(filePath, data) {
+export function appendNdjson(filePath: string, data: any): void {
     fs.appendFileSync(filePath, JSON.stringify(data) + "\n", "utf-8");
 }
 
@@ -60,7 +60,7 @@ export function appendNdjson(filePath, data) {
  * @param {string} filePath 
  * @param {Array<object>} list 
  */
-export function writeNdjson(filePath, list) {
+export function writeNdjson(filePath: string, list: any[]): void {
     const content = list.map(item => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(filePath, content, "utf-8");
 }

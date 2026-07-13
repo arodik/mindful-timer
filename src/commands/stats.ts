@@ -1,21 +1,33 @@
 import {getSessions, logCommand} from "./log.js";
 import {Duration} from "luxon";
+import {Command, TimerSessionData} from "../types.js";
 
 const signature = "stats [period]";
 const description = "Show statistics about logged sessions";
 const configure = logCommand.configure;
 
-function getObjectFromDuration(duration) {
-    return duration.shiftTo("hours", "minutes", "seconds")
-        .toObject()
+interface StatsResult {
+    totalTimeMinutes: number;
+    count: number;
+    totalTime: Duration;
+    tags: string[];
 }
 
-function getTags(sessions) {
+interface InterruptedStatsResult extends StatsResult {
+    realTimeMs: number;
+    realTime: Duration;
+}
+
+function getObjectFromDuration(duration: Duration): any {
+    return duration.shiftTo("hours", "minutes", "seconds").toObject();
+}
+
+function getTags(sessions: TimerSessionData[]): string[] {
     const allTags = sessions.flatMap(session => session.tags || []);
     return Array.from(new Set(allTags));
 }
 
-function getStats(sessions) {
+function getStats(sessions: TimerSessionData[]): StatsResult {
     const totalTimeMinutes = sessions.reduce((total, session) => total + session.duration, 0);
 
     return {
@@ -23,23 +35,23 @@ function getStats(sessions) {
         count: sessions.length,
         totalTime: Duration.fromObject({minutes: totalTimeMinutes}),
         tags: getTags(sessions),
-    }
+    };
 }
 
-function getInterruptedStats(sessions) {
+function getInterruptedStats(sessions: TimerSessionData[]): InterruptedStatsResult {
     const stats = getStats(sessions);
     const realTimeMs = sessions.reduce((total, session) => {
-        return total + session.interruptTs - session.startTs;
+        return total + ((session.interruptTs || 0) - session.startTs);
     }, 0);
 
     return {
         ...stats,
         realTimeMs,
         realTime: Duration.fromMillis(realTimeMs),
-    }
+    };
 }
 
-function getPrettyDurationString(duration) {
+function getPrettyDurationString(duration: Duration): string {
     const {hours, minutes, seconds} = getObjectFromDuration(duration);
     const parts = [];
 
@@ -60,7 +72,7 @@ function getPrettyDurationString(duration) {
         : "0";
 }
 
-function printTotalStats(finishedStats, interruptedStats) {
+function printTotalStats(finishedStats: StatsResult, interruptedStats: InterruptedStatsResult): void {
     const totalTimeLogged = finishedStats.totalTimeMinutes;
     const totalTimeInterruptedMs = interruptedStats.realTimeMs;
 
@@ -75,7 +87,7 @@ function printTotalStats(finishedStats, interruptedStats) {
     console.log();
 }
 
-function printStats(stats) {
+function printStats(stats: StatsResult): void {
     console.log(`Sessions: ${stats.count}`);
     console.log(`Total time: ${getPrettyDurationString(stats.totalTime)}`);
     if (stats.tags.length) {
@@ -83,7 +95,7 @@ function printStats(stats) {
     }
 }
 
-function printInterruptedStats(stats) {
+function printInterruptedStats(stats: InterruptedStatsResult): void {
     console.log(`Sessions: ${stats.count}`);
 
     if (stats.realTime) {
@@ -95,7 +107,7 @@ function printInterruptedStats(stats) {
     }
 }
 
-async function run(argv) {
+async function run(argv: any): Promise<void> {
     const {period} = argv;
     const sessions = getSessions(period);
 
@@ -114,9 +126,9 @@ async function run(argv) {
     printInterruptedStats(interruptedStats);
 }
 
-export const statsCommand = {
+export const statsCommand: Command = {
     signature,
     description,
     configure,
     run,
-}
+};

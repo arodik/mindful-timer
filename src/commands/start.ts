@@ -4,11 +4,14 @@ import {clearLineAndWrite} from "../helpers/cli.js";
 import {getDndProvider} from "../dnd/index.js";
 import {Timer} from "easytimer.js";
 import dialog from "dialog";
+import {Command, DndProvider} from "../types.js";
+import {Argv} from "yargs";
 
 const signature = "start [sessionSize]";
 const description = "Start the timer";
-function configure(yargs) {
-    yargs.positional('sessionSize', {
+
+function configure(yargs: Argv<any>): Argv<any> {
+    return yargs.positional('sessionSize', {
         type: 'number',
         default: 25,
         describe: 'Duration of the session in minutes'
@@ -20,10 +23,10 @@ function configure(yargs) {
         alias: "tags",
         type: "array",
         describe: "List of tags separated by whitespace"
-    })
+    });
 }
 
-async function run(argv) {
+async function run(argv: any): Promise<void> {
     const {name, sessionSize, tags} = argv;
     console.log(`Starting timer for ${sessionSize}m`);
 
@@ -36,15 +39,16 @@ async function run(argv) {
 
     const doNotDisturb = getDndProvider();
     doNotDisturb.enable();
-    startCountdownTimer(sessionTimer, sessionSize, async (eventName, event) => {
+    
+    startCountdownTimer(sessionTimer, sessionSize, (eventName, eventData) => {
         if (eventName === "update") {
-            return printTimerValue(event.timer);
+            return printTimerValue(eventData.timer);
         }
 
         if (eventName === "finish") {
             session.finish();
             doNotDisturb.disable();
-            printTimerSummary(event);
+            printTimerSummary(eventData);
             maybeAutoCompact();
             dialog.info("Good job! Take a moment to rest", "Mindful Timer");
         }
@@ -53,11 +57,11 @@ async function run(argv) {
     process.on('SIGINT', handleKeyboardInterrupt(session, doNotDisturb));
 }
 
-function printTimerValue(timer) {
+function printTimerValue(timer: Timer): void {
     clearLineAndWrite("⏱  " + timer.getTimeValues().toString());
 }
 
-function printTimerSummary(summary) {
+function printTimerSummary(summary: any): void {
     const timeFormat = "HH:mm:ss";
     const startedAt = summary.startedAt.toFormat(timeFormat);
     const endedAt = summary.endedAt.toFormat(timeFormat);
@@ -65,7 +69,7 @@ function printTimerSummary(summary) {
     clearLineAndWrite(`✅ ${startedAt} - ${endedAt}\n`);
 }
 
-function maybeAutoCompact() {
+function maybeAutoCompact(): void {
     try {
         const lines = TimerSession.getRawLineCount();
         const unique = TimerSession.selectAll().length;
@@ -77,7 +81,7 @@ function maybeAutoCompact() {
     }
 }
 
-function handleKeyboardInterrupt(session, doNotDisturb) {
+function handleKeyboardInterrupt(session: TimerSession, doNotDisturb: DndProvider): () => void {
     return function () {
         const timeSpendSeconds = (Date.now() - session.data.startTs) / 1000;
 
@@ -96,7 +100,7 @@ function handleKeyboardInterrupt(session, doNotDisturb) {
     };
 }
 
-export const startCommand = {
+export const startCommand: Command = {
     signature,
     description,
     configure,

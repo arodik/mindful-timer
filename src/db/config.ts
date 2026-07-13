@@ -8,7 +8,7 @@ import {getFileName, getSettingsDir} from "../helpers/settings.js";
  * 
  * @returns {string} The path to the data directory.
  */
-export function getDataPath() {
+export function getDataPath(): string {
     const settingsPath = getSettingsDir();
     const pathToConfig = path.resolve(settingsPath, getFileName("config"));
 

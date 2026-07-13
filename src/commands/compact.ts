@@ -1,13 +1,15 @@
 import {TimerSession} from "../db/session.js";
+import {Command} from "../types.js";
+import {Argv} from "yargs";
 
 const signature = "compact";
 const description = "Compact and consolidate database history (removes duplicate update rows)";
 
-function configure(yargs) {
-    // No arguments needed
+function configure(yargs: Argv<any>): Argv<any> {
+    return yargs;
 }
 
-async function run() {
+async function run(): Promise<void> {
     const linesBefore = TimerSession.getRawLineCount();
     
     console.log("Compacting database...");
@@ -26,7 +28,7 @@ async function run() {
     }
 }
 
-export const compactCommand = {
+export const compactCommand: Command = {
     signature,
     description,
     configure,

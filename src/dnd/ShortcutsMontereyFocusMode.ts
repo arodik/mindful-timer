@@ -5,9 +5,10 @@ import {
     isFocusModeShortcutInstalled
 } from "macos-focus-mode";
 import dialog from "dialog";
+import { DndProvider } from "../types.js";
 
-export class ShortcutsMontereyFocusMode {
-    ensurePackageIsInstalled() {
+export class ShortcutsMontereyFocusMode implements DndProvider {
+    ensurePackageIsInstalled(): void {
         if (isFocusModeShortcutInstalled()) {
             return;
         }
@@ -23,12 +24,12 @@ export class ShortcutsMontereyFocusMode {
         process.exit(0);
     }
 
-    enable() {
+    enable(): void {
         this.ensurePackageIsInstalled();
         enableFocusMode();
     }
 
-    disable() {
+    disable(): void {
         this.ensurePackageIsInstalled();
         disableFocusMode();
     }

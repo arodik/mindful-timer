@@ -1,9 +1,13 @@
 import crypto from "node:crypto";
 import {DatabaseCollection} from "./collection.js";
+import {TimerSessionData, SessionInitData} from "../types.js";
 
 export class TimerSession extends DatabaseCollection {
     static collection = "sessions";
-    static create(sessionData) {
+    sessionId: string;
+    data!: TimerSessionData;
+
+    static create(sessionData: SessionInitData): TimerSession {
         const sessionId = crypto.randomBytes(4).toString("hex");
 
         const session = new TimerSession(sessionId);
@@ -12,12 +16,12 @@ export class TimerSession extends DatabaseCollection {
         return session;
     }
 
-    constructor(sessionId) {
+    constructor(sessionId: string) {
         super();
         this.sessionId = sessionId;
     }
 
-    create(session) {
+    create(session: SessionInitData): void {
         this.data = {
             id: this.sessionId,
             name: session.name,
@@ -31,19 +35,19 @@ export class TimerSession extends DatabaseCollection {
         this.insert(this.data);
     }
 
-    finish() {
-        this.changeRecord(TimerSession.collection, this.sessionId, (session) => {
+    finish(): void {
+        this.changeRecord(TimerSession.collection, this.sessionId, (session: TimerSessionData) => {
             session.finished = true;
         });
     }
 
-    interrupt() {
-        this.changeRecord(TimerSession.collection, this.sessionId, (session) => {
+    interrupt(): void {
+        this.changeRecord(TimerSession.collection, this.sessionId, (session: TimerSessionData) => {
             session.interruptTs = Date.now();
         });
     }
 
-    remove() {
+    remove(): void {
         super.remove(TimerSession.collection, this.sessionId);
     }
 }

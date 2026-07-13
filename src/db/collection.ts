@@ -4,7 +4,7 @@ import {getDataPath} from "./config.js";
 import path from "path";
 import fs from "fs";
 
-function getDbPath() {
+function getDbPath(): string {
     return path.resolve(
         getSettingsDir(),
         getDataPath(),
@@ -13,16 +13,18 @@ function getDbPath() {
 }
 
 export class DatabaseCollection {
-    static getDbPath() {
+    dbPath: string;
+
+    static getDbPath(): string {
         return getDbPath();
     }
 
-    static selectAll() {
+    static selectAll(): any[] {
         const filePath = getDbPath();
         const records = readNdjson(filePath);
         
         // Last-Write-Wins mapping to resolve session updates
-        const resolvedMap = {};
+        const resolvedMap: Record<string, any> = {};
         for (const record of records) {
             resolvedMap[record.id] = record;
         }
@@ -30,17 +32,17 @@ export class DatabaseCollection {
         return Object.values(resolvedMap);
     }
 
-    static select(predicate) {
+    static select(predicate: (item: any) => boolean): any[] {
         return this.selectAll().filter(predicate);
     }
 
-    static compact() {
+    static compact(): void {
         const filePath = getDbPath();
         const resolved = this.selectAll();
         writeNdjson(filePath, resolved);
     }
 
-    static getRawLineCount() {
+    static getRawLineCount(): number {
         const filePath = getDbPath();
         if (!fs.existsSync(filePath)) {
             return 0;
@@ -53,20 +55,26 @@ export class DatabaseCollection {
         this.dbPath = getDbPath();
     }
 
-    insert(record) {
+    insert(record: any): void {
         appendNdjson(this.dbPath, record);
     }
 
-    changeRecord(collection, id, mutator) {
-        // Support both (collection, id, mutator) and (id, mutator) signatures
-        let targetId = id;
-        let targetMutator = mutator;
-        if (typeof id === "function") {
-            targetMutator = id;
-            targetId = collection;
+    changeRecord(idOrCollection: string, mutatorOrId?: any, maybeMutator?: any): void {
+        let targetId: string;
+        let targetMutator: (record: any) => void;
+
+        // Support both:
+        // - changeRecord(id, mutator)
+        // - changeRecord(collection, id, mutator)
+        if (typeof mutatorOrId === "function") {
+            targetId = idOrCollection;
+            targetMutator = mutatorOrId;
+        } else {
+            targetId = mutatorOrId;
+            targetMutator = maybeMutator;
         }
 
-        const resolved = this.constructor.selectAll();
+        const resolved = (this.constructor as typeof DatabaseCollection).selectAll();
         const record = resolved.find(item => item.id === targetId);
         if (!record) {
             return;
@@ -76,14 +84,19 @@ export class DatabaseCollection {
         appendNdjson(this.dbPath, record);
     }
 
-    remove(collection, id) {
-        // Support both (collection, id) and (id) signatures
-        let targetId = id;
-        if (id === undefined) {
-            targetId = collection;
+    remove(idOrCollection: string, maybeId?: string): void {
+        let targetId: string;
+
+        // Support both:
+        // - remove(id)
+        // - remove(collection, id)
+        if (maybeId === undefined) {
+            targetId = idOrCollection;
+        } else {
+            targetId = maybeId;
         }
 
-        const resolved = this.constructor.selectAll();
+        const resolved = (this.constructor as typeof DatabaseCollection).selectAll();
         const filtered = resolved.filter(item => item.id !== targetId);
         writeNdjson(this.dbPath, filtered);
     }

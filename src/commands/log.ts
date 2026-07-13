@@ -1,28 +1,32 @@
 import {TimerSession} from "../db/session.js";
 import {DateTime} from "luxon";
+import {Command, TimerSessionData} from "../types.js";
+import {Argv} from "yargs";
 
 const signature = "log [period]";
 const description = "Show information about logged sessions";
 
-function configure(yargs) {
-    yargs.positional('period', {
+function configure(yargs: Argv<any>): Argv<any> {
+    return yargs.positional('period', {
         type: "string",
         default: "day",
         choices: ["day", "week", "month", "quarter", "year", "full"]
-    })
-}
-
-export function getSessions(logPeriod) {
-    if (logPeriod === "full") {
-        return TimerSession.selectAll();
-    }
-
-    return TimerSession.select(session => {
-        return session.startTs >= DateTime.local().startOf(logPeriod).ts;
     });
 }
 
-function formatStartDate(date, period) {
+export function getSessions(logPeriod: any): TimerSessionData[] {
+    if (logPeriod === "full") {
+        return TimerSession.selectAll() as TimerSessionData[];
+    }
+
+    return TimerSession.select((session: TimerSessionData) => {
+        const start = DateTime.local().startOf(logPeriod);
+        // Fallback/safety for startOf which can return null/invalid
+        return session.startTs >= (start.isValid ? start.toMillis() : 0);
+    }) as TimerSessionData[];
+}
+
+function formatStartDate(date: DateTime, period: string): string {
     if (period === "day") {
         return date.toFormat("T");
     }
@@ -35,7 +39,7 @@ function formatStartDate(date, period) {
     return date.toFormat("dd MMM T");
 }
 
-function getReadableDuration(session) {
+function getReadableDuration(session: TimerSessionData): string | number {
     const startDate = DateTime.fromMillis(session.startTs);
     const interruptDate = session.interruptTs
         ? DateTime.fromMillis(session.interruptTs)
@@ -47,8 +51,8 @@ function getReadableDuration(session) {
     return duration < 1 ? "<1" : duration;
 }
 
-function printSessionInfo(period) {
-    return session => {
+function printSessionInfo(period: string): (session: TimerSessionData) => void {
+    return (session: TimerSessionData) => {
         const finished = session.finished ? "✅" : "❌";
         const startDate = formatStartDate(DateTime.fromMillis(session.startTs), period);
         const readableDuration = getReadableDuration(session);
@@ -61,14 +65,14 @@ function printSessionInfo(period) {
     };
 }
 
-async function run(argv) {
+async function run(argv: any): Promise<void> {
     const {period} = argv;
     const sessions = getSessions(period);
 
     sessions.reverse().forEach(printSessionInfo(period));
 }
 
-export const logCommand = {
+export const logCommand: Command = {
     signature,
     description,
     configure,
