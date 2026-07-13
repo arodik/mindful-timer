@@ -1,56 +1,90 @@
 import {getFileName, getSettingsDir} from "../helpers/settings.js";
-import {openFileDb} from "../helpers/db.js";
+import {readNdjson, appendNdjson, writeNdjson} from "../helpers/db.js";
 import {getDataPath} from "./config.js";
 import path from "path";
-import _ from "lodash";
+import fs from "fs";
 
-function getDb() {
-    const pathToData = path.resolve(
+function getDbPath() {
+    return path.resolve(
         getSettingsDir(),
         getDataPath(),
         getFileName("db")
     );
-
-    return openFileDb(pathToData, {
-        sessions: []
-    });
 }
 
 export class DatabaseCollection {
-    static selectAll() {
-        const db = getDb();
+    static getDbPath() {
+        return getDbPath();
+    }
 
-        return db.data[this.collection];
+    static selectAll() {
+        const filePath = getDbPath();
+        const records = readNdjson(filePath);
+        
+        // Last-Write-Wins mapping to resolve session updates
+        const resolvedMap = {};
+        for (const record of records) {
+            resolvedMap[record.id] = record;
+        }
+
+        return Object.values(resolvedMap);
     }
 
     static select(predicate) {
-        const db = getDb();
+        return this.selectAll().filter(predicate);
+    }
 
-        const collection = db.data[this.collection];
-        return collection.filter(predicate);
+    static compact() {
+        const filePath = getDbPath();
+        const resolved = this.selectAll();
+        writeNdjson(filePath, resolved);
+    }
+
+    static getRawLineCount() {
+        const filePath = getDbPath();
+        if (!fs.existsSync(filePath)) {
+            return 0;
+        }
+        const content = fs.readFileSync(filePath, "utf-8");
+        return content.split("\n").filter(line => line.trim() !== "").length;
     }
 
     constructor() {
-        this.db = getDb();
+        this.dbPath = getDbPath();
+    }
+
+    insert(record) {
+        appendNdjson(this.dbPath, record);
     }
 
     changeRecord(collection, id, mutator) {
-        const collectionArray = this.db.data[collection];
-        const session = collectionArray.find(item => item.id === id);
+        // Support both (collection, id, mutator) and (id, mutator) signatures
+        let targetId = id;
+        let targetMutator = mutator;
+        if (typeof id === "function") {
+            targetMutator = id;
+            targetId = collection;
+        }
 
-        if (!session) {
+        const resolved = this.constructor.selectAll();
+        const record = resolved.find(item => item.id === targetId);
+        if (!record) {
             return;
         }
 
-        mutator(session);
-
-        this.db.write();
+        targetMutator(record);
+        appendNdjson(this.dbPath, record);
     }
 
     remove(collection, id) {
-        const collectionArray = this.db.data[collection];
-        _.remove(collectionArray, item => item.id === id);
+        // Support both (collection, id) and (id) signatures
+        let targetId = id;
+        if (id === undefined) {
+            targetId = collection;
+        }
 
-        this.db.write();
+        const resolved = this.constructor.selectAll();
+        const filtered = resolved.filter(item => item.id !== targetId);
+        writeNdjson(this.dbPath, filtered);
     }
 }

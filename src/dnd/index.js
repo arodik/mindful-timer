@@ -1,10 +1,9 @@
 import os from "os";
-import semverParse from "semver/functions/parse.js";
 import {DummyDnDProvider} from "./DummyDnD.js";
 import {ShortcutsMontereyFocusMode} from "./ShortcutsMontereyFocusMode.js";
 
 function isMontereyOrNewer() {
-    const { major } = semverParse(os.release())
+    const major = parseInt(os.release().split(".")[0], 10);
     return major >= 21;
 }
 

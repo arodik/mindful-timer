@@ -45,11 +45,12 @@ async function run(argv) {
             session.finish();
             doNotDisturb.disable();
             printTimerSummary(event);
+            maybeAutoCompact();
             dialog.info("Good job! Take a moment to rest", "Mindful Timer");
         }
     });
 
-    process.on('SIGINT', handleKeyboardInterrupt(session));
+    process.on('SIGINT', handleKeyboardInterrupt(session, doNotDisturb));
 }
 
 function printTimerValue(timer) {
@@ -64,7 +65,19 @@ function printTimerSummary(summary) {
     clearLineAndWrite(`✅ ${startedAt} - ${endedAt}\n`);
 }
 
-function handleKeyboardInterrupt(session) {
+function maybeAutoCompact() {
+    try {
+        const lines = TimerSession.getRawLineCount();
+        const unique = TimerSession.selectAll().length;
+        if (lines > 100 && lines > unique * 1.5) {
+            TimerSession.compact();
+        }
+    } catch (e) {
+        console.error("Auto-compaction failed:", e);
+    }
+}
+
+function handleKeyboardInterrupt(session, doNotDisturb) {
     return function () {
         const timeSpendSeconds = (Date.now() - session.data.startTs) / 1000;
 
@@ -74,9 +87,10 @@ function handleKeyboardInterrupt(session) {
             session.remove();
         } else {
             session.interrupt();
+            maybeAutoCompact();
         }
 
-        getDndProvider().disable();
+        doNotDisturb.disable();
 
         process.exit(0);
     };
