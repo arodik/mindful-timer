@@ -2,10 +2,12 @@ import { startCommand } from "./commands/start.js";
 import { logCommand } from "./commands/log.js";
 import { statsCommand } from "./commands/stats.js";
 import { compactCommand } from "./commands/compact.js";
+import { migrateDatabaseIfNeeded } from "./db/collection.js";
 import yargs from "yargs";
 import { hideBin } from 'yargs/helpers';
 
 export async function runCli() {
+    migrateDatabaseIfNeeded();
     yargs(hideBin(process.argv))
         .version()
         .usage('$0 <cmd> [args]')

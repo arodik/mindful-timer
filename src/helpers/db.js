@@ -1,4 +1,5 @@
 import fs from "fs";
+import path from "path";
 
 /**
  * Reads an NDJSON file and parses each line.
@@ -13,23 +14,6 @@ export function readNdjson(filePath) {
     }
 
     const content = fs.readFileSync(filePath, "utf-8");
-    const trimmed = content.trim();
-
-    // Check for backward-compatible migration from old LowDB sync format (JSON object)
-    if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
-        try {
-            const oldData = JSON.parse(trimmed);
-            if (oldData && Array.isArray(oldData.sessions)) {
-                const sessions = oldData.sessions;
-                writeNdjson(filePath, sessions);
-                console.log(`Migrated database at ${filePath} to NDJSON format.`);
-                return sessions;
-            }
-        } catch (e) {
-            // Not JSON or parse failed, fallback to NDJSON processing
-        }
-    }
-
     return content
         .split("\n")
         .filter(line => line.trim() !== "")
@@ -51,6 +35,7 @@ export function readNdjson(filePath) {
  * @param {object} data 
  */
 export function appendNdjson(filePath, data) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.appendFileSync(filePath, JSON.stringify(data) + "\n", "utf-8");
 }
 
@@ -61,6 +46,7 @@ export function appendNdjson(filePath, data) {
  * @param {Array<object>} list 
  */
 export function writeNdjson(filePath, list) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
     const content = list.map(item => JSON.stringify(item)).join("\n") + "\n";
     fs.writeFileSync(filePath, content, "utf-8");
 }

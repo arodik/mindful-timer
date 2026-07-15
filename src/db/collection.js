@@ -1,14 +1,48 @@
-import {getFileName, getSettingsDir} from "../helpers/settings.js";
-import {readNdjson, appendNdjson, writeNdjson} from "../helpers/db.js";
-import {getDataPath} from "./config.js";
+import { getFileName, getSettingsDir } from "../helpers/settings.js";
+import { readNdjson, appendNdjson, writeNdjson } from "../helpers/db.js";
+import { getDataPath } from "./config.js";
 import path from "path";
 import fs from "fs";
+
+let isMigratedChecked = false;
+
+export function migrateDatabaseIfNeeded() {
+    if (isMigratedChecked) {
+        return;
+    }
+    isMigratedChecked = true;
+
+    const ndjsonPath = getDbPath();
+    if (fs.existsSync(ndjsonPath)) {
+        return;
+    }
+
+    const oldDbPath = path.resolve(
+        getSettingsDir(),
+        getDataPath(),
+        getFileName("db", "json")
+    );
+    if (fs.existsSync(oldDbPath)) {
+        try {
+            const content = fs.readFileSync(oldDbPath, "utf-8");
+            const oldData = JSON.parse(content.trim());
+            if (oldData && Array.isArray(oldData.sessions)) {
+                const contentNdjson = oldData.sessions.map(item => JSON.stringify(item)).join("\n") + "\n";
+                fs.mkdirSync(path.dirname(ndjsonPath), { recursive: true });
+                fs.writeFileSync(ndjsonPath, contentNdjson, "utf-8");
+                console.log(`Migrating database from the legacy format...`);
+            }
+        } catch (e) {
+            console.error(`Failed to migrate old database at ${oldDbPath}:`, e);
+        }
+    }
+}
 
 function getDbPath() {
     return path.resolve(
         getSettingsDir(),
         getDataPath(),
-        getFileName("db")
+        getFileName("db", "ndjson")
     );
 }
 
@@ -20,7 +54,7 @@ export class DatabaseCollection {
     static selectAll() {
         const filePath = getDbPath();
         const records = readNdjson(filePath);
-        
+
         // Last-Write-Wins mapping to resolve session updates
         const resolvedMap = {};
         for (const record of records) {
